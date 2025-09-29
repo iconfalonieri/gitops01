@@ -69,7 +69,7 @@ spec:
                 <p style="color: red;">flux gitops</p>
                 <br>
                 <br>
-                <p>pod name: $HOSTNAME</p>
+                <p style="color: blue;">pod name: $HOSTNAME</p>
               </body>
               </html>
               EOF
