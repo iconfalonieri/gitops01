@@ -69,17 +69,17 @@ spec:
                 <p style="color: red;">flux gitops</p>
                 <br>
                 <br>
-                <p style="color: green;">pod name: $HOSTNAME</p>
+                <p>pod name: $HOSTNAME</p>
               </body>
               </html>
               EOF
               nginx -g 'daemon off;'
           resources:
             requests:
-              cpu: "50m"
+              cpu: "100m"
               memory: "16Mi"
             limits:
-              cpu: "100m"
+              cpu: "150m"
               memory: "32Mi"
 
 ---
