@@ -6,7 +6,7 @@ metadata:
   labels:
     app: nginx
 spec:
-  replicas: 2
+  replicas: 
   selector:
     matchLabels:
       app: nginx
@@ -76,11 +76,11 @@ spec:
               nginx -g 'daemon off;'
           resources:
             requests:
-              cpu: "100m"
-              memory: "16Mi"
+              cpu: "50m"
+              memory: "8Mi"
             limits:
-              cpu: "150m"
-              memory: "32Mi"
+              cpu: "10m"
+              memory: "16Mi"
 
 ---
 apiVersion: policy/v1
