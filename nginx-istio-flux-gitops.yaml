@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      nodeSelector:
+        agentpool: userpool
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: nginx
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              cat <<EOF > /usr/share/nginx/html/index.html
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="refresh" content="5">
+                <title>Welcome to nginx!</title>
+                <style>
+                  html, body {
+                    height: 100%;
+                    margin: 0;
+                    background-color: #fff;
+                    color: #000;
+                    font-family: Tahoma, Verdana, Arial, sans-serif;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    text-align: center;
+                    padding-top: 50px;
+                  }
+                  h1 { font-size: 3em; margin-bottom: 0.5em; }
+                  p { font-size: 1.5em; margin: 0.2em; }
+                  a { color: #000; text-decoration: underline; }
+                  hr { width: 50%; border-color: #000; margin: 20px auto; }
+                </style>
+              </head>
+              <body>
+                <h1>Welcome to nginx!</h1>
+                <p>The nginx web server is successfully installed.</p>
+                <p>flux gitops</p>
+                <br>
+                <br>
+                <p>pod name: $HOSTNAME</p>
+              </body>
+              </html>
+              EOF
+              nginx -g 'daemon off;'
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "16Mi"
+            limits:
+              cpu: "150m"
+              memory: "32Mi"
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nginx-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: nginx
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-loadbalancer
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: nginx-gateway
+spec:
+  selector:
+    app: aks-istio-ingressgateway-external
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: nginx
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - nginx-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/gitops"
+      rewrite:
+        uri: "/"
+      route:
+        - destination:
+            host: nginx-loadbalancer
+            port:
+              number: 80
