@@ -76,10 +76,10 @@ spec:
               nginx -g 'daemon off;'
           resources:
             requests:
-              cpu: "100m"
+              cpu: "50m"
               memory: "16Mi"
             limits:
-              cpu: "150m"
+              cpu: "100m"
               memory: "32Mi"
 
 ---
