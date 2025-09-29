@@ -6,7 +6,7 @@ metadata:
   labels:
     app: nginx
 spec:
-  replicas: 
+  replicas: 2
   selector:
     matchLabels:
       app: nginx
@@ -66,7 +66,7 @@ spec:
               <body>
                 <h1>Welcome to nginx!</h1>
                 <p>The nginx web server is successfully installed.</p>
-                <p>FLUX-GITOPS</p>
+                <p style="color: red;">flux gitops</p>
                 <br>
                 <br>
                 <p>pod name: $HOSTNAME</p>
