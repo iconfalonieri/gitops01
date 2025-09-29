@@ -18,7 +18,7 @@ spec:
       nodeSelector:
         agentpool: userpool
       topologySpreadConstraints:
-        - maxSkew: 2
+        - maxSkew: 3
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
