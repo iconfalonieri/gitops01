@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment
+  namespace: gitops-ic-01
   labels:
     app: nginx
 spec:
@@ -86,6 +87,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: nginx-pdb
+  namespace: gitops-ic-01
 spec:
   minAvailable: 1
   selector:
@@ -97,6 +99,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx-loadbalancer
+  namespace: gitops-ic-01
 spec:
   type: ClusterIP
   selector:
@@ -111,6 +114,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: nginx-gateway
+  namespace: gitops-ic-01
 spec:
   selector:
     app: aks-istio-ingressgateway-external
@@ -127,6 +131,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: nginx
+  namespace: gitops-ic-01
 spec:
   hosts:
     - "*"
