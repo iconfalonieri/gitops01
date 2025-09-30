@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tomcat-deployment
+  namespace: ns-tomcat-app01
   labels:
     app: tomcat
 spec:
@@ -99,6 +100,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: tomcat-loadbalancer
+  namespace: ns-tomcat-app01
 spec:
   type: ClusterIP
   selector:
@@ -113,6 +115,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: tomcat-gateway
+  namespace: ns-tomcat-app01
 spec:
   selector:
     app: aks-istio-ingressgateway-external
@@ -129,6 +132,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: tomcat
+  namespace: ns-tomcat-app01
 spec:
   hosts:
     - "*"
