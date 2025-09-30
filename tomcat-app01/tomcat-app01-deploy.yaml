@@ -93,7 +93,7 @@ spec:
                   <p>Pod: ${HOSTNAME}</p>
                   <p>Node: ${NODE_NAME}</p>
                   <br>
-                  <p class="refresh">page will refresh in <span id="countdown">5</span> seconds.</p>
+                  <p class="refresh">page will refresh in <span id="countdown">5</span> seconds</p>
                 </div>
               </body>
               </html>
