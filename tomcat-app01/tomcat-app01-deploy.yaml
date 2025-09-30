@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deployment
+  labels:
+    app: tomcat
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tomcat
+  template:
+    metadata:
+      labels:
+        app: tomcat
+    spec:
+      nodeSelector:
+        agentpool: userpool
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: tomcat
+      containers:
+        - name: tomcat
+          image: tomcat:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: tomcat-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: tomcat
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat-loadbalancer
+spec:
+  type: ClusterIP
+  selector:
+    app: tomcat
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: tomcat-gateway
+spec:
+  selector:
+    app: aks-istio-ingressgateway-external
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: tomcat
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - tomcat-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/tc-app1"
+      rewrite:
+        uri: "/"
+      route:
+        - destination:
+            host: tomcat-loadbalancer
+            port:
+              number: 80
