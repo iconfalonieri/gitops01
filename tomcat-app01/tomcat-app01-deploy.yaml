@@ -40,7 +40,6 @@ spec:
               <html>
               <head>
                 <title>Tomcat Base Page</title>
-                <meta http-equiv="refresh" content="5">
                 <style>
                   body {
                     font-family: Tahoma, Verdana, Arial, sans-serif;
@@ -72,7 +71,25 @@ spec:
                     color: #666;
                     margin-top: 10px;
                   }
+                  #countdown {
+                    font-size: 2em;
+                    font-weight: bold;
+                    color: #ff3300;
+                  }
                 </style>
+                <script>
+                  let countdown = 5;
+                  function updateCountdown() {
+                    document.getElementById("countdown").innerText = countdown;
+                    if (countdown === 0) {
+                      location.reload(); // ricarica la pagina
+                    } else {
+                      countdown--;
+                      setTimeout(updateCountdown, 1000);
+                    }
+                  }
+                  window.onload = updateCountdown;
+                </script>
               </head>
               <body>
                 <div class="box">
@@ -81,7 +98,7 @@ spec:
                   <p>Pod: ${HOSTNAME}</p>
                   <p>Node: ${NODE_NAME}</p>
                   <br>
-                  <p class="refresh">automatic refresh every 5s.</p>
+                  <p class="refresh">Page will refresh in <span id="countdown">5</span> seconds.</p>
                 </div>
               </body>
               </html>
@@ -96,6 +113,7 @@ spec:
               memory: "1Gi"
 
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -111,6 +129,7 @@ spec:
       targetPort: 8080
 
 ---
+
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
@@ -128,6 +147,7 @@ spec:
         - "*"
 
 ---
+
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
