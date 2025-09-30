@@ -75,8 +75,8 @@ spec:
                 <script>
                   let countdown = 5;
                   function updateCountdown() {
-                    document.getElementById("countdown").innerText = countdown;
-                    if (countdown === 1) {
+                    document.getElementById("countdown").innerText = countdown === 0 ? "-" : countdown;
+                    if (countdown === 0) {
                       setTimeout(() => location.reload(), 1000); // ricarica dopo 1 secondo
                     } else {
                       countdown--;
@@ -93,7 +93,7 @@ spec:
                   <p>Pod: ${HOSTNAME}</p>
                   <p>Node: ${NODE_NAME}</p>
                   <br>
-                  <p class="refresh">page will refresh in <span id="countdown">5</span> seconds</p>
+                  <p class="refresh">Page will refresh in <span id="countdown">5</span> seconds.</p>
                 </div>
               </body>
               </html>
