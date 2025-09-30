@@ -75,7 +75,7 @@ spec:
                 <script>
                   let countdown = 5;
                   function updateCountdown() {
-                    document.getElementById("countdown").innerText = countdown === 0 ? "-" : countdown;
+                    document.getElementById("countdown").innerText = countdown === 0 ? "0" : countdown;
                     if (countdown === 0) {
                       setTimeout(() => location.reload(), 1000); // ricarica dopo 1 secondo
                     } else {
