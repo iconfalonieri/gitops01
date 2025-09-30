@@ -16,18 +16,76 @@ spec:
     spec:
       nodeSelector:
         agentpool: userpool
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: DoNotSchedule
-          labelSelector:
-            matchLabels:
-              app: tomcat
       containers:
         - name: tomcat
           image: tomcat:latest
           ports:
             - containerPort: 8080
+          env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mkdir -p /usr/local/tomcat/webapps/ROOT
+              cat <<EOF > /usr/local/tomcat/webapps/ROOT/index.html
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <title>Tomcat Base Page</title>
+                <meta http-equiv="refresh" content="5">
+                <style>
+                  body {
+                    font-family: Tahoma, Verdana, Arial, sans-serif;
+                    text-align: center;
+                    padding: 50px;
+                    background-color: #f4f4f4;
+                    color: #333;
+                  }
+                  h1 {
+                    font-size: 3em;
+                    color: #ff6600;
+                  }
+                  p {
+                    font-size: 1.2em;
+                  }
+                  .box {
+                    background-color: #fff;
+                    display: inline-block;
+                    padding: 20px 40px;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                  }
+                  hr {
+                    border: 1px solid #ff6600;
+                    width: 50%;
+                  }
+                  .refresh {
+                    font-style: italic;
+                    color: #666;
+                    margin-top: 10px;
+                  }
+                </style>
+              </head>
+              <body>
+                <div class="box">
+                  <h1>Tomcat is running!</h1>
+                  <hr>
+                  <p>Pod: ${HOSTNAME}</p>
+                  <p>Node: ${NODE_NAME}</p>
+                  <br>
+                  <p class="refresh">automatic refresh every 5s.</p>
+                </div>
+              </body>
+              </html>
+              EOF
+              catalina.sh run
           resources:
             requests:
               cpu: "200m"
@@ -35,17 +93,6 @@ spec:
             limits:
               cpu: "500m"
               memory: "1Gi"
-
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: tomcat-pdb
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      app: tomcat
 
 ---
 apiVersion: v1
