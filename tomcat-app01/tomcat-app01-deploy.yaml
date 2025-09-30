@@ -71,18 +71,13 @@ spec:
                     color: #666;
                     margin-top: 10px;
                   }
-                  #countdown {
-                    font-size: 2em;
-                    font-weight: bold;
-                    color: #ff3300;
-                  }
                 </style>
                 <script>
                   let countdown = 5;
                   function updateCountdown() {
                     document.getElementById("countdown").innerText = countdown;
-                    if (countdown === 0) {
-                      location.reload(); // ricarica la pagina
+                    if (countdown === 1) {
+                      setTimeout(() => location.reload(), 1000); // ricarica dopo 1 secondo
                     } else {
                       countdown--;
                       setTimeout(updateCountdown, 1000);
@@ -98,7 +93,7 @@ spec:
                   <p>Pod: ${HOSTNAME}</p>
                   <p>Node: ${NODE_NAME}</p>
                   <br>
-                  <p class="refresh">Page will refresh in <span id="countdown">5</span> seconds.</p>
+                  <p class="refresh">page will refresh in <span id="countdown">5</span> seconds.</p>
                 </div>
               </body>
               </html>
