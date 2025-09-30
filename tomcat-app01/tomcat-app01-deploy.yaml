@@ -88,7 +88,7 @@ spec:
               </head>
               <body>
                 <div class="box">
-                  <h1>Tomcat is running!</h1>
+                  <h1>tomcat is running!</h1>
                   <hr>
                   <p>Pod: ${HOSTNAME}</p>
                   <p>Node: ${NODE_NAME}</p>
